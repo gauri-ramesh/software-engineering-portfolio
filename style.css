@@ -2,6 +2,7 @@
 html {
     background-color: #4D6D9A;
     font-family: 'Dosis', sans-serif;
+    overflow-x: hidden;
 }
 
 h1 {
@@ -9,7 +10,16 @@ h1 {
     font-family: 'Dosis', sans-serif;
     text-align: center;
     font-weight: 300;
-    font-size: 100px;
+    font-size: 75px;
+}
+
+p {
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.flex {
+    display: flex;
 }
 
 /* Add a black background color to the top navigation */
@@ -37,5 +47,80 @@ h1 {
 /* Add a color to the active/current link */
 .topnav a.active {
     background-color: #99CED3;
+    color: #5F6366;
+}
+
+.code-chunk {
+    background-color:#EEEFF8;
+    width: 50%;
+    margin: 4%;
+    border-radius: 1px;
+    display: inline-block;
+    font-size: 15px;
+    line-height: 1.5;
+    /* margin-left: 25%;
+    margin-right: 30%; */
+    overflow-x: scroll;
+}
+
+
+.explanation {
+    background-color: #EDB5BF; 
+    width: 35%;
+    display: inline-block;
+    vertical-align: top;
+    padding: 1%;
+    margin: 4%;
+    color: #5F6366; 
+    font-size: 35px;
+}
+
+.section-light-blue {
+    background-color : #86B3D1;
+    width: 90%;
+    margin-bottom: 3%;
+    padding: 1%;
+    margin: 4%;
+}
+
+.section-teal {
+    background-color : #99CED3;
+    width: 90%;
+    margin-bottom: 3%;
+    padding: 1%;
+    margin: 4%;
+}
+
+.section-pink {
+    background-color: #EDB5BF;
+    width: 90%;
+    margin-bottom: 3%;
+    padding: 1%;
+    margin: 4%;
+}
+
+.explanation-right-chunk {
+    width: 40%;
+    float: right;
+    padding: 1%;
+}
+
+.explanation-left-chunk {
+    width: 40%;
+    float: right;
+    padding: 1%;
+}
+
+.right {
+    background-color: #99CED3;
+    width: 40%; 
+    text-align: right;
+    float: right;
+    font-size: 35px;
+    padding: 1%;
+    margin: 4%;
+}
+
+.explanation h1 {
     color: #5F6366;
 }

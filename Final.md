@@ -6,34 +6,25 @@ To find this file in the code base, navigate to this [link](https://github.com/s
 
 CsvGenerator.cs
 ```CSharp
-        public static byte[] GenerateCsv<T>(IList<T> itemsToWriteList, ClassMap map = null)
+    public static byte[] GenerateCsv<T>(IList<T> itemsToWriteList, ClassMap map = null)
+    {
+        using (var memoryStream = new MemoryStream())
         {
-            using (var memoryStream = new MemoryStream())
+            TextWriter writer = new StreamWriter(memoryStream);
+            var csv = new CsvWriter(writer);
+            var records = itemsToWriteList;
+
+            if (map != null)
             {
-                TextWriter writer = new StreamWriter(memoryStream);
-                var csv = new CsvWriter(writer);
-                var records = itemsToWriteList;
-
-                if (map != null)
-                {
-                    csv.Configuration.RegisterClassMap(map);
-                }
-
-                csv.WriteRecords(records);
-                writer.Flush();
-
-                return memoryStream.ToArray();
+                csv.Configuration.RegisterClassMap(map);
             }
-        }
-```
-Example of code chunk being used in the project: 
 
-```CSharp
-        public byte[] CreateReport(ReportPreferences preferences)
-        {
-            var recordsToWrite = CreateReportItemsFromDatabase(preferences);
-            return CsvGenerator.GenerateCsv(recordsToWrite, new TotalProfitClassMap());
+            csv.WriteRecords(records);
+            writer.Flush();
+
+            return memoryStream.ToArray();
         }
+    }
 ```
 
 Example of ClassMap used in `GenerateCsv` method:
@@ -59,34 +50,33 @@ public class TotalProfitReportItem
     }
 ```
 
-### About This Code Chunk
-* Makes use of a third-party library called CsvHelper
-* Adheres to single responsibility principle
-* Prefers interfaces over their implementations by using an IList of items.
-* Cleans up resources after usage
-
 ResponseFactory.cs
 
 ```CSharp
-    public class ResponseFactory
+public class ResponseFactory
+{
+    public static HttpResponseMessage ConstructCsvResponse(byte[] csvContentBytes)
     {
-        public static HttpResponseMessage ConstructCsvResponse(byte[] csvContentBytes)
+        var result = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            var result = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new ByteArrayContent(csvContentBytes)
-            };
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentLength = csvContentBytes.Length;
-            return result;
-        }
+            Content = new ByteArrayContent(csvContentBytes)
+        };
+        result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+        result.Content.Headers.ContentLength = csvContentBytes.Length;
+        return result;
     }
+}
 ```
 
 ### About This Code Chunk
-* TODO
-* TODO
-* TODO
+This series of code chunks provides a full picture of the CSV Generation stack. The CSV Generation stack is used in several places throughout our application, from the Revenue Reports, to families viewing their students and invoices. <br/><br/>
+ Since we interpreted the requirements as having to build a hands-off system, we chose to send the monthly reports as CSVs in an email to the administrator. Because of this, I chose to generate CSV reports on the backend to prevent duplicate code between report viewing and sending.  This operates with the help of CsvHelper, a NuGet package that helps generate CSVs from models. <br/><br/>
+ `TotalProfitReportItem` is an example of a model class that describes the columns of one of our revenue reports. `TotalProfitReportItem` demonstrates low coupling by separating itself from any of the other reports. By creating a model for each report type, it becomes easy to change what information is displayed in the report and create new reports. ClassMaps are a feature in the CsvHelper library that allow you to customize how information is displayed in the CSV. For this, I used the ClassMap to rename the columsn. Additionally, this class demonstrates high cohesion by defining the CSV ClassMaps in the same place as the model definition. <br/><br/>
+ `GenerateCsv` is where the CSV actually gets generated in the form of a byte array to prepare for sending it as an HTTP response. The goal of this method was to make it as abstract as possible since several parts of the application use this feature. This method belongs in the utility project to allow for reuse in multiple components. it prefers interfaces over their implementations by using an `IList`, so that if we choose to use something like a `LinkedList` in the future, we are able to without much refactoring. It also allows for an IList of any type `<T>` to be generated into a CSV. Finally, it makes use of C#'s default parameters so that even developers not using a model with a ClassMap can use this method.<br/><br/>
+ Within the function, this code utilizes `using` statements to control resource usage. Additionally, `writer.Flush()` is called to prevent the `CsvWriter` from becoming overloaded. <br/><br/>
+ The final chunk in this code sample is the `ConstructCsvResponse` method. This method custom creates the header and response of the CSV byte array using UTF-8 and specifying the length of the response. It displays good software engineering principles by making the representation of the data consistent both in the back-end and the front-end.
+
+
 
 ## Code Sample #2 : Finding Closest Date Algorithm in JavaScript
 
@@ -216,39 +206,84 @@ Of all of the reports I generated, I chose to showcase the Total Profit Report E
 Code Chunk in Use:
 ![ReportSummary](screens/reportexample.PNG)
 
-## Code Sample #3 : Converting CSV into an HTML Table 
+## Code Sample #4 : Standardizing Front-End Error Validation 
 
 ```javascript
-let CsvToHtmlTable = (data) => {
-    let build = "<table class=\"table table-striped\">\n";
-    let headAndBody = data.split("\n");
-    // Construct the header
-    build += "<tr>\n<thead class=\"thead-dark\">\n";
-    let headElements = headAndBody[0].split(",");
-    for (let i = 0; i < headElements.length; i++) {
-        build += `<th>${headElements[i].toString()}</th>\n`;
+const assignErrorClass = (viewModelAttribute, inputField, validator = true, message =
+"The following field is required") => {
+    if (viewModelAttribute === undefined) {
+        badInput(inputField, message);
+        $(inputField).addClass("is-invalid");
+        return false;
+    } else if (!validator) {
+        badInput(inputField, message);
+        $(inputField).addClass("is-invalid");
+        return false;
+    } else {
+        goodInput(inputField);
+        return true;
     }
-    build += "\n</thead>\n</tr>\n";
-
-    // Construct the body
-    for (let i = 1; i < headAndBody.length - 1; i++) {
-        let rowElements = headAndBody[i].split(",");
-        build += "<tr>\n";
-        for (let i = 0; i < rowElements.length; i++) {
-            let cellText = "";
-            if (rowElements[i].toString().length > 0) {
-                cellText = rowElements[i].toString();
-            }
-            build += `<td>${cellText}</td>\n`;
-        }
-        build += "</tr>\n";
-    }
-    build += "</table>";
-    return build;
 };
 
-export default CsvToHtmlTable;
+const goodInput = (element) => {
+    $(element).removeClass("is-invalid");
+    $(`${element}-invalid`).css("visibility", "hidden");
+};
+
+const badInput = (id, message) => {
+    $(id).addClass("is-invalid");
+    $(`${id}-invalid`).css("visibility", "visible");
+    $(`${id}-invalid`).text(message);
+};
 ```
+
+### About the Code Chunk:
+* TODO
+* TODO
+* TODO
+
+## Code Sample #5 : Text Message Notification Accessor
+
+```CSharp
+using System.Diagnostics;
+using Core.Accessors;
+using Core.Models;
+using Twilio;
+using Twilio.Exceptions;
+using Twilio.Rest.Api.V2010.Account;
+
+namespace Accessors
+{
+    public class TextMessageAccessor : ITextMessageAccessor
+    {
+        public bool Send(PhoneNumber to, string body)
+        {
+            var accountSid = "AC9e977e44167ba6b169d6884c96a9903c";
+            var authToken = "b96004eaed62d0eb9ba571a95048776d";
+
+            TwilioClient.Init(accountSid, authToken);
+            try
+            {
+                var message = MessageResource.Create(
+                    to: new Twilio.Types.PhoneNumber(to.Number),
+                    from: "+15312016725",
+                    body: body);
+                return true;
+            }
+            catch (ApiException e)
+            {
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine($"Twilio Error {e.Code} - {e.MoreInfo}");
+                return false;
+            }
+        }
+    }
+}
+```
+### About this Code Chunk
+* TODO
+* TODO
+* TODO
 
 
 
