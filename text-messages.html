@@ -1,0 +1,116 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="./main.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+    <h1>gauri's software engineering portfolio</h1>
+    <div class="topnav">
+        <a href="index.html">CSV Generation</a>
+        <a href="closest-date-algorithm.html">Closest Date Algorithm</a>
+        <a href="example-report-engine.html">Example Report Engine</a>
+        <a href="error-handling.html">Standardizing Error Messages</a>
+        <a class="active" href="text-messages.html">Text Message Notifications</a>
+        <a href="Final.md" download="portfolio.md">Download as PDF</a>
+    </div>
+    <div class="flex">
+        <div class="explanation">
+            <h1>code sample 5</h1>
+            Text Message Notifications
+            <br/> Click
+            <a href="https://goo.gl/mbbvEc"> here </a>to view the source code on GitHub.
+        </div>
+        <div class="right">
+            <h1>about this sample</h1>
+            <p>This code chunk utilizes Twilio to send SMS messages to users when an automatic payment is coming up.</p>
+        </div>
+    </div>
+    <div class="section-light-blue flex">
+        <div class="code-chunk">
+    <pre><code class="lang-CSharp"><span class="hljs-keyword">using</span> System.Diagnostics;
+    <span class="hljs-keyword">using</span> Core.Accessors;
+    <span class="hljs-keyword">using</span> Core.Models;
+    <span class="hljs-keyword">using</span> Twilio;
+    <span class="hljs-keyword">using</span> Twilio.Exceptions;
+    <span class="hljs-keyword">using</span> Twilio.Rest.Api.V2010.Account;
+
+    <span class="hljs-keyword">namespace</span> <span class="hljs-title">Accessors</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TextMessageAccessor</span> : <span class="hljs-title">ITextMessageAccessor</span>
+        {
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">bool</span> <span class="hljs-title">Send</span>(<span class="hljs-params">PhoneNumber to, <span class="hljs-keyword">string</span> body</span>)
+            </span>{
+                <span class="hljs-keyword">var</span> accountSid = <span class="hljs-string">"AC9e977e44167ba6b169d6884c96a9903c"</span>;
+                <span class="hljs-keyword">var</span> authToken = <span class="hljs-string">"b96004eaed62d0eb9ba571a95048776d"</span>;
+
+                TwilioClient.Init(accountSid, authToken);
+                <span class="hljs-keyword">try</span>
+                {
+                    <span class="hljs-keyword">var</span> message = MessageResource.Create(
+                        to: <span class="hljs-keyword">new</span> Twilio.Types.PhoneNumber(to.Number),
+                        <span class="hljs-keyword">from</span>: <span class="hljs-string">"+15312016725"</span>,
+                        body: body);
+                    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+                }
+                <span class="hljs-keyword">catch</span> (ApiException e)
+                {
+                    Debug.WriteLine(e.Message);
+                    Debug.WriteLine(<span class="hljs-string">$"Twilio Error <span class="hljs-subst">{e.Code}</span> - <span class="hljs-subst">{e.MoreInfo}</span>"</span>);
+                    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                }
+            }
+        }
+    }
+    </code></pre>
+
+
+        </div>
+        <div class="explanation-right-chunk">
+            <h1>msg & data rates may apply.</h1>
+            <p>This code uses the Twilio API to send automatic text message notifications to users when a payment is coming
+                up. It belongs in the Accessor layer, and it only interacts with the Core layer directly below it. It uses
+                credentials given by my account on Twilio to send a text message to the phone number gathered during registration.
+                <br/>
+                <br/> First, this method implements
+                <code>ITextMessageAccessor</code>, and uses a Unity DI container to achieve constructor injection. This code demonstrates adaptation to change.
+                Our initial schema did not account for text message notifications, but it was designed such that this type
+                of notification would be possible. We standardized the representation of
+                <code>PhoneNumber</code> so it could be used by text message notification APIs by accessing a property directly without writing error-prone
+                string manipulation code.
+                <br/>
+                <br/>The structure of the workflow made it easy to integrate a third-party API with our home-grown code. It demonstrates
+                good use of the library by researching the custom exceptions that belong to the API and catching these exceptions
+                where the library is used, the most logical place, since this feature is not client-facing in the web app.
+                I chose to not propagate these exceptions to the Engine level so that I could use Twilio&#39;s custom exceptions
+                without importing the library again in another spot.
+                <code>ApiException</code> is a custom Twilio exception that provides better error documentation than one a developer using it would
+                have implemented, so it prevents reinventing the wheel.
+                <br/>
+                <br/> I avoided reinventing the wheel and stayed consistent with our existing notification workflow by using Twilio&#39;s
+                C# NuGet package to call
+                <code>messageResource.Create()</code> instead of formatting my own HTTP request to Twilio&#39;s endpoint in the Web layer, which the JavaScript
+                documentation suggests. The final reason I preferred to write this on the C# side relates to volatility-based
+                decomposition - client-facing code tends to change more frequently and more quickly than back-end code, and
+                because this code is not volatile, it should be encapsulated with other non-volatile code. Finally, this
+                code demonstrates consistency with the remainder of the code base. The
+                <code>ITextMessageAccessor</code> and the
+                <code>ISmtpEmailServerAccessor</code> both contain a
+                <code>Send</code> method, and the
+                <code>TextNotificationProcessing Engine</code> and the
+                <code>EmailNotificationProcessingEngine</code> have similar workflows that follow from this acccessor. If a developer at Nelnet were to take on our project
+                after handoff, it would be easy for them to navigate the structure of both notification workflows.</p>
+
+
+        </div>
+    </div>
+
+
+    </div>
+</body>
+
+</html>

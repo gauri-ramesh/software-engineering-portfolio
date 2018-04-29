@@ -10,13 +10,14 @@
 
 <body>
     <h1>gauri's software engineering portfolio</h1>
-    <a href="Final.md" download="portfolio.md">download here</a>
+    
     <div class="topnav">
-        <a class="active" href="#home">CSV Generation</a>
+        <a  href="#home">CSV Generation</a>
         <a href="closest-date-algorithm.html">Closest Date Algorithm</a>
         <a href="example-report-engine.html">Example Report Engine</a>
-        <a href="error-handling.html">Standardizing Error Messages</a>
-        <a href="#about">Sample 5</a>
+        <a class="active" href="error-handling.html">Standardizing Error Messages</a>
+        <a href="text-messages.html">Text Message Notifications</a>
+        <a href="Final.md" download="portfolio.md">Download as PDF</a>
     </div>
     <div class="flex">
         <div class="explanation">
@@ -33,33 +34,33 @@
     </div>
     <div class="section-light-blue flex">
         <div class="code-chunk">
-            <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> assignErrorClass = (viewModelAttribute, inputField, validator = <span class="hljs-literal">true</span>, message =
-                    <span class="hljs-string">"The following field is required"</span>) =&gt; {
-                        <span class="hljs-keyword">if</span> (viewModelAttribute === <span class="hljs-literal">undefined</span>) {
-                            badInput(inputField, message);
-                            $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
-                            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
-                        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!validator) {
-                            badInput(inputField, message);
-                            $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
-                            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
-                        } <span class="hljs-keyword">else</span> {
-                            goodInput(inputField);
-                            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
-                        }
-                    };
-                    
-                    <span class="hljs-keyword">const</span> goodInput = <span class="hljs-function">(<span class="hljs-params">element</span>) =&gt;</span> {
-                        $(element).removeClass(<span class="hljs-string">"is-invalid"</span>);
-                        $(<span class="hljs-string">`<span class="hljs-subst">${element}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"hidden"</span>);
-                    };
-                    
-                    <span class="hljs-keyword">const</span> badInput = <span class="hljs-function">(<span class="hljs-params">id, message</span>) =&gt;</span> {
-                        $(id).addClass(<span class="hljs-string">"is-invalid"</span>);
-                        $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"visible"</span>);
-                        $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).text(message);
-                    };
-                    </code></pre>
+    <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> assignErrorClass = (viewModelAttribute, inputField, validator = <span class="hljs-literal">true</span>, message =
+        <span class="hljs-string">"The following field is required"</span>) =&gt; {
+            <span class="hljs-keyword">if</span> (viewModelAttribute === <span class="hljs-literal">undefined</span>) {
+                badInput(inputField, message);
+                $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!validator) {
+                badInput(inputField, message);
+                $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            } <span class="hljs-keyword">else</span> {
+                goodInput(inputField);
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+            }
+        };
+        
+        <span class="hljs-keyword">const</span> goodInput = <span class="hljs-function">(<span class="hljs-params">element</span>) =&gt;</span> {
+            $(element).removeClass(<span class="hljs-string">"is-invalid"</span>);
+            $(<span class="hljs-string">`<span class="hljs-subst">${element}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"hidden"</span>);
+        };
+        
+        <span class="hljs-keyword">const</span> badInput = <span class="hljs-function">(<span class="hljs-params">id, message</span>) =&gt;</span> {
+            $(id).addClass(<span class="hljs-string">"is-invalid"</span>);
+            $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"visible"</span>);
+            $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).text(message);
+        };
+        </code></pre>
 
         </div>
         <div class="explanation-right-chunk">
@@ -76,6 +77,13 @@
 
         </div>
     </div>
+
+    <div class="section-teal">
+            <img src="screens/errorhandling.png" alt="Error Handling" width="600" , height="auto">
+            <div class="explanation-right-chunk">
+                <h1>registration error messages example</h1>
+            </div>
+        </div>
 
 
     </div>

@@ -10,20 +10,20 @@
 
 <body>
     <h1>gauri's software engineering portfolio</h1>
-    <a href="Final.md" download="portfolio.md">download here</a>
     <div class="topnav">
         <a href="index.html">CSV Generation</a>
         <a href="closest-date-algorithm.html">Closest Date Algorithm</a>
         <a class="active" href="example-report-engine.html">Example Report Engine</a>
         <a href="error-handling.html">Standardizing Error Messages</a>
-        <a href="#about">Sample 5</a>
+        <a href="text-messages.html">Text Message Notifications</a>
+        <a href="Final.md" download="portfolio.md">Download as PDF</a>
     </div>
     <div class="flex">
         <div class="explanation">
             <h1>code sample 3</h1>
             Sample Report Engine
             <br/> Click
-            <a href="SOMETHINGSOMETHINGSOMETHING">here</a> to view the source on GitHub.
+            <a href="https://goo.gl/5Jn7SS">here</a> to view the source on GitHub.
         </div>
         <div class="right">
             <h1>about this sample</h1>
@@ -34,69 +34,69 @@
     </div>
     <div class="section-light-blue flex">
         <div class="code-chunk">
-            <pre><code class="lang-CSharp">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TotalProfitReportEngine</span> : <span class="hljs-title">ITotalProfitReportEngine</span>
+<pre><code class="lang-CSharp">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TotalProfitReportEngine</span> : <span class="hljs-title">ITotalProfitReportEngine</span>
+    {
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceAccessor _invoiceAccessor;
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceItemAccessor _invoiceItemAccessor;
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IStudentAccessor _studentAccessor;
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TotalProfitReportEngine</span>(<span class="hljs-params">IInvoiceAccessor ia, IInvoiceItemAccessor it, IStudentAccessor sa</span>)
+        </span>{
+            _invoiceAccessor = ia;
+            _invoiceItemAccessor = it;
+            _studentAccessor = sa;
+        }
+
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">CreateReport</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+        </span>{
+            <span class="hljs-keyword">var</span> recordsToWrite = CreateReportItemsFromDatabase(preferences);
+            <span class="hljs-keyword">return</span> CsvGenerator.GenerateCsv(recordsToWrite, <span class="hljs-keyword">new</span> TotalProfitClassMap());
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> IList&lt;TotalProfitReportItem&gt; <span class="hljs-title">CreateReportItemsFromDatabase</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+        </span>{
+            <span class="hljs-keyword">var</span> invoiceItems = _invoiceItemAccessor.Get();
+            IList&lt;TotalProfitReportItem&gt; reportItems = <span class="hljs-keyword">new</span> List&lt;TotalProfitReportItem&gt;();
+
+            <span class="hljs-keyword">var</span> startDate = DateTime.Parse(preferences.StartTime);
+            <span class="hljs-keyword">var</span> endDate = DateTime.Parse(preferences.EndTime);
+
+            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> invoiceItem <span class="hljs-keyword">in</span> invoiceItems)
+            {
+                LoadInvoiceItem(invoiceItem);
+                <span class="hljs-keyword">if</span> (invoiceItem.Type == InvoiceItemType.BaseTuition || invoiceItem.Type == InvoiceItemType.LateFee)
+                {
+                    <span class="hljs-keyword">if</span> (startDate &lt;= invoiceItem.Invoice.InvoiceDate &amp;&amp; endDate &gt;= invoiceItem.Invoice.InvoiceDate)
                     {
-                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceAccessor _invoiceAccessor;
-                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceItemAccessor _invoiceItemAccessor;
-                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IStudentAccessor _studentAccessor;
-                
-                        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TotalProfitReportEngine</span>(<span class="hljs-params">IInvoiceAccessor ia, IInvoiceItemAccessor it, IStudentAccessor sa</span>)
-                        </span>{
-                            _invoiceAccessor = ia;
-                            _invoiceItemAccessor = it;
-                            _studentAccessor = sa;
-                        }
-                
-                
-                        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">CreateReport</span>(<span class="hljs-params">ReportPreferences preferences</span>)
-                        </span>{
-                            <span class="hljs-keyword">var</span> recordsToWrite = CreateReportItemsFromDatabase(preferences);
-                            <span class="hljs-keyword">return</span> CsvGenerator.GenerateCsv(recordsToWrite, <span class="hljs-keyword">new</span> TotalProfitClassMap());
-                        }
-                
-                        <span class="hljs-function"><span class="hljs-keyword">public</span> IList&lt;TotalProfitReportItem&gt; <span class="hljs-title">CreateReportItemsFromDatabase</span>(<span class="hljs-params">ReportPreferences preferences</span>)
-                        </span>{
-                            <span class="hljs-keyword">var</span> invoiceItems = _invoiceItemAccessor.Get();
-                            IList&lt;TotalProfitReportItem&gt; reportItems = <span class="hljs-keyword">new</span> List&lt;TotalProfitReportItem&gt;();
-                
-                            <span class="hljs-keyword">var</span> startDate = DateTime.Parse(preferences.StartTime);
-                            <span class="hljs-keyword">var</span> endDate = DateTime.Parse(preferences.EndTime);
-                
-                            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> invoiceItem <span class="hljs-keyword">in</span> invoiceItems)
-                            {
-                                LoadInvoiceItem(invoiceItem);
-                                <span class="hljs-keyword">if</span> (invoiceItem.Type == InvoiceItemType.BaseTuition || invoiceItem.Type == InvoiceItemType.LateFee)
-                                {
-                                    <span class="hljs-keyword">if</span> (startDate &lt;= invoiceItem.Invoice.InvoiceDate &amp;&amp; endDate &gt;= invoiceItem.Invoice.InvoiceDate)
-                                    {
-                                        <span class="hljs-keyword">var</span> type = invoiceItem.Type;
-                                        type = StringUtils.ConvertConstantToTitleCase(type);
-                
-                                        reportItems.Add(<span class="hljs-keyword">new</span> TotalProfitReportItem
-                                        {
-                                            StudentFirstName = invoiceItem.Invoice.Student.FirstName,
-                                            StudentLastName = invoiceItem.Invoice.Student.LastName,
-                                            FeeType = type,
-                                            Amount = Math.Round(invoiceItem.Amount, <span class="hljs-number">2</span>)
-                                        });
-                                    }
-                                }
-                            }
-                
-                            <span class="hljs-keyword">return</span> reportItems;
-                        }
-                
-                        <span class="hljs-function"><span class="hljs-keyword">public</span> ReportTotal <span class="hljs-title">GetTotal</span>(<span class="hljs-params">ReportPreferences preferences</span>)
-                        </span>{
-                            <span class="hljs-keyword">var</span> totalProfitEarned = CreateReportItemsFromDatabase(preferences).Sum(profitItem =&gt; profitItem.Amount);
-                            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReportTotal
-                            {
-                                Amount = Math.Round(totalProfitEarned, <span class="hljs-number">2</span>),
-                                Description = <span class="hljs-string">"Total Profit Earned In This Period"</span>
-                            };
-                        }
+                        <span class="hljs-keyword">var</span> type = invoiceItem.Type;
+                        type = StringUtils.ConvertConstantToTitleCase(type);
+
+                        reportItems.Add(<span class="hljs-keyword">new</span> TotalProfitReportItem
+                        {
+                            StudentFirstName = invoiceItem.Invoice.Student.FirstName,
+                            StudentLastName = invoiceItem.Invoice.Student.LastName,
+                            FeeType = type,
+                            Amount = Math.Round(invoiceItem.Amount, <span class="hljs-number">2</span>)
+                        });
                     }
-                </code></pre>
+                }
+            }
+
+            <span class="hljs-keyword">return</span> reportItems;
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> ReportTotal <span class="hljs-title">GetTotal</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+        </span>{
+            <span class="hljs-keyword">var</span> totalProfitEarned = CreateReportItemsFromDatabase(preferences).Sum(profitItem =&gt; profitItem.Amount);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReportTotal
+            {
+                Amount = Math.Round(totalProfitEarned, <span class="hljs-number">2</span>),
+                Description = <span class="hljs-string">"Total Profit Earned In This Period"</span>
+            };
+        }
+    }
+</code></pre>
 
         </div>
         <div class="explanation-right-chunk">
