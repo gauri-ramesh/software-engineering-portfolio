@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="./main.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+    <h1>gauri's software engineering portfolio</h1>
+    <a href="Final.md" download="portfolio.md">download here</a>
+    <div class="topnav">
+        <a href="index.html">CSV Generation</a>
+        <a href="closest-date-algorithm.html">Closest Date Algorithm</a>
+        <a class="active" href="example-report-engine.html">Example Report Engine</a>
+        <a href="error-handling.html">Standardizing Error Messages</a>
+        <a href="#about">Sample 5</a>
+    </div>
+    <div class="flex">
+        <div class="explanation">
+            <h1>code sample 3</h1>
+            Sample Report Engine
+            <br/> Click
+            <a href="SOMETHINGSOMETHINGSOMETHING">here</a> to view the source on GitHub.
+        </div>
+        <div class="right">
+            <h1>about this sample</h1>
+            <p>This sample of code takes data gathered by hitting the Invoice endpoint and calculates the date of the next invoice
+                in it. It is used in two places: first, in the registration summary page, as shown below. It is also shown
+                on the Update Card Information page on the payment user accounts.</p>
+        </div>
+    </div>
+    <div class="section-light-blue flex">
+        <div class="code-chunk">
+            <pre><code class="lang-CSharp">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">TotalProfitReportEngine</span> : <span class="hljs-title">ITotalProfitReportEngine</span>
+                    {
+                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceAccessor _invoiceAccessor;
+                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IInvoiceItemAccessor _invoiceItemAccessor;
+                        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IStudentAccessor _studentAccessor;
+                
+                        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TotalProfitReportEngine</span>(<span class="hljs-params">IInvoiceAccessor ia, IInvoiceItemAccessor it, IStudentAccessor sa</span>)
+                        </span>{
+                            _invoiceAccessor = ia;
+                            _invoiceItemAccessor = it;
+                            _studentAccessor = sa;
+                        }
+                
+                
+                        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">CreateReport</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+                        </span>{
+                            <span class="hljs-keyword">var</span> recordsToWrite = CreateReportItemsFromDatabase(preferences);
+                            <span class="hljs-keyword">return</span> CsvGenerator.GenerateCsv(recordsToWrite, <span class="hljs-keyword">new</span> TotalProfitClassMap());
+                        }
+                
+                        <span class="hljs-function"><span class="hljs-keyword">public</span> IList&lt;TotalProfitReportItem&gt; <span class="hljs-title">CreateReportItemsFromDatabase</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+                        </span>{
+                            <span class="hljs-keyword">var</span> invoiceItems = _invoiceItemAccessor.Get();
+                            IList&lt;TotalProfitReportItem&gt; reportItems = <span class="hljs-keyword">new</span> List&lt;TotalProfitReportItem&gt;();
+                
+                            <span class="hljs-keyword">var</span> startDate = DateTime.Parse(preferences.StartTime);
+                            <span class="hljs-keyword">var</span> endDate = DateTime.Parse(preferences.EndTime);
+                
+                            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> invoiceItem <span class="hljs-keyword">in</span> invoiceItems)
+                            {
+                                LoadInvoiceItem(invoiceItem);
+                                <span class="hljs-keyword">if</span> (invoiceItem.Type == InvoiceItemType.BaseTuition || invoiceItem.Type == InvoiceItemType.LateFee)
+                                {
+                                    <span class="hljs-keyword">if</span> (startDate &lt;= invoiceItem.Invoice.InvoiceDate &amp;&amp; endDate &gt;= invoiceItem.Invoice.InvoiceDate)
+                                    {
+                                        <span class="hljs-keyword">var</span> type = invoiceItem.Type;
+                                        type = StringUtils.ConvertConstantToTitleCase(type);
+                
+                                        reportItems.Add(<span class="hljs-keyword">new</span> TotalProfitReportItem
+                                        {
+                                            StudentFirstName = invoiceItem.Invoice.Student.FirstName,
+                                            StudentLastName = invoiceItem.Invoice.Student.LastName,
+                                            FeeType = type,
+                                            Amount = Math.Round(invoiceItem.Amount, <span class="hljs-number">2</span>)
+                                        });
+                                    }
+                                }
+                            }
+                
+                            <span class="hljs-keyword">return</span> reportItems;
+                        }
+                
+                        <span class="hljs-function"><span class="hljs-keyword">public</span> ReportTotal <span class="hljs-title">GetTotal</span>(<span class="hljs-params">ReportPreferences preferences</span>)
+                        </span>{
+                            <span class="hljs-keyword">var</span> totalProfitEarned = CreateReportItemsFromDatabase(preferences).Sum(profitItem =&gt; profitItem.Amount);
+                            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReportTotal
+                            {
+                                Amount = Math.Round(totalProfitEarned, <span class="hljs-number">2</span>),
+                                Description = <span class="hljs-string">"Total Profit Earned In This Period"</span>
+                            };
+                        }
+                    }
+                </code></pre>
+
+        </div>
+        <div class="explanation-right-chunk">
+            <h1>where the heavy lifting happens.</h1>
+            <p>This code chunk demonstrates good use of IDesign Architecture and dependency injection. As seen in the constructor
+                of the TotalProfitReportEngine, because this is an engine, it is only communicating with the Accessors (the
+                layer below it). Additionally, this code follows the dependency inversion principle by using constructor
+                injection for all of the Accessors it is using. One large roadblock I ran into while writing all of the report
+                engines was standardizing the way different languages represent dates. C# and JavaScript each use different
+                ways of representing dates as strings. I fixed this by creating a C#-formatted date string on the JavaScript
+                side, and allowing the report engines to parse it into DateTime objects. Because that is a piece of business
+                logic, I put this code in the Engine layer. This sample demonstrates high cohesion because all methods relating
+                to the
+                <code>TotalProfitReportEngine</code> are encapsulated in one class, allowing for maximum code reuse. Efficiency and clean code was taken into
+                account while writing this method - I took care to only create report column objects for those invoices that
+                fall in the desired date range. This class implements the
+                <code>ITotalProfitReportEngine</code> interface, which implements the
+                <code>IReportEngine</code> interface. The
+                <code>IReportEngine</code> interface contains methods for all of the bare-bones necessities of a revenue report -
+                <code>CreateReportItemsFromDatabase</code>, the method that takes persisted data and constructs rows based on user preferences. There is the
+                <code>ReportTotal</code>, which calculates any kind of aggregate amount the user wants, and finally,
+                <code>CreateReport</code>, which creates the CSV to send up to the web layer. Finally, this Engine utilizes LINQ to help make the
+                C# code clean and readable.</p>
+
+        </div>
+    </div>
+    <div class="section-teal">
+        <img src="screens/reportexample.png" alt="Report Summary" width="600" , height="auto">
+        <div class="explanation-right-chunk">
+            <h1>example report</h1>
+        </div>
+    </div>
+
+</body>
+
+</html>

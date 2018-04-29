@@ -123,6 +123,10 @@ Code Chunk in Use:
 * Uses a sorting algorithm to find the nearest date to today that is in the future.
 * Adheres to single responsibility principle because all date-related functions are encapsulated in this utility class.
 
+This sample of code takes data gathered by hitting the Invoice endpoint and calculates the date of the next invoice in it. It is used in two places: first, in the registration summary page, as shown below. It is also shown on the Update Card Information page on the payment user accounts. <br/><br/>
+Some of the salient features of this code chunk include the use of features in JavaScript EcmaScript 6 (ES6). This includes the use of arrow functions, templated strings, and use of keywords `let` and `const`. This matches industry standard specifications of how to write JavaScript. Additionally, I configured ESLint, a JavaScript static code analysis tool, to enforce these styles throughout our JavaScript files. <br/><br/>
+The sample uses a sorting algorithm to find the nearest date to today in the future, so it demonstrates understanding of last semester's Algorithms/Introduction to Software Engineering course. Additionally, this code is encapsulated in its own utility class to minimize code duplication and maximize code reuse. It anticipates change and demonstrates modularity - if we need more date utility functions, there is a place it can go without breaking other parts of the system.
+
 ## Code Sample #3: Report Generation
 Of all of the reports I generated, I chose to showcase the Total Profit Report Engine.
 
@@ -190,23 +194,15 @@ Of all of the reports I generated, I chose to showcase the Total Profit Report E
                 Description = "Total Profit Earned In This Period"
             };
         }
-
-        private void LoadInvoiceItem(InvoiceItem invoiceItem)
-        {
-            invoiceItem.Invoice = _invoiceAccessor.Get(invoiceItem.Invoice.Id);
-            var student = invoiceItem.Invoice.Student;
-
-            if (student != null)
-            {
-                invoiceItem.Invoice.Student = _studentAccessor.Get(student.Id);
-            }
-        }
     }
 ```
 Code Chunk in Use:
 ![ReportSummary](screens/reportexample.PNG)
 
-## Code Sample #4 : Standardizing Front-End Error Validation 
+About This Code Chunk: <br/>
+<br/>
+This code chunk demonstrates good use of IDesign Architecture and dependency injection. As seen in the constructor of the TotalProfitReportEngine, because this is an engine, it is only communicating with the Accessors (the layer below it). Additionally, this code follows the dependency inversion principle by using constructor injection for all of the Accessors it is using. One large roadblock I ran into while writing all of the report engines was standardizing the way different languages represent dates. C# and JavaScript each use different ways of representing dates as strings. I fixed this by creating a C#-formatted date string on the JavaScript side, and allowing the report engines to parse it into DateTime objects. Because that is a piece of business logic, I put this code in the Engine layer. This sample demonstrates high cohesion because all methods relating to the `TotalProfitReportEngine` are encapsulated in one class, allowing for maximum code reuse. Efficiency and clean code was taken into account while writing this method - I took care to only create report column objects for those invoices that fall in the desired date range. This class implements the `ITotalProfitReportEngine` interface, which implements the `IReportEngine` interface. The `IReportEngine` interface contains methods for all of the bare-bones necessities of a revenue report - `CreateReportItemsFromDatabase`, the method that takes persisted data and constructs rows based on user preferences. There is the `ReportTotal`, which calculates any kind of aggregate amount the user wants, and finally, `CreateReport`, which creates the CSV to send up to the web layer. Finally, this Engine utilizes LINQ to help make the C# code clean and readable.
+## Code Sample #4 : Standardizing Front-End Input Validation Error Messages
 
 ```javascript
 const assignErrorClass = (viewModelAttribute, inputField, validator = true, message =
@@ -238,9 +234,7 @@ const badInput = (id, message) => {
 ```
 
 ### About the Code Chunk:
-* TODO
-* TODO
-* TODO
+This code standardizes front-end error error messages during input validation by providing a utility function that assigns Bootstrap error classes to Knockout observables based on an optional validation function and a custom error message. This sample of code, similar to the Closest Date Algorithm, makes use of ES6+ features. In the `goodInput` and `badInput` functions I use JQuery to dynamically add and remove error CSS classes. This adheres to software engineering principles by preventing code duplication throughout the file, since every input needs it during registration. Additionally, this adheres to the principles of developing good user interfaces by giving the user feedback as they interact with the application that is consistent both visually and structurally. The error message are displayed in a pink/red tone to indicate danger or error to the user. This function works in any input validation scenario because the validator and message parameters have default values. This means that even if you have input that requires no validation besides making sure it isn't empty, it can still be used.
 
 ## Code Sample #5 : Text Message Notification Accessor
 

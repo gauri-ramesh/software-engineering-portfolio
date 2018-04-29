@@ -14,121 +14,79 @@
     <div class="topnav">
         <a href="index.html">CSV Generation</a>
         <a class="active" href="closest-date-algorithm.html">Closest Date Algorithm</a>
-        <a href="#contact">Example Report Engine</a>
-        <a href="#about">Sample 4</a>
+        <a href="example-report-engine.html">Example Report Engine</a>
+        <a href="error-handling.html">Standardizing Error Messages</a>
         <a href="#about">Sample 5</a>
     </div>
     <div class="flex">
         <div class="explanation">
-            <h1>code sample 1</h1>
+            <h1>code sample 2</h1>
             Closest Date Algorithm
             <br/> Click
-            <a href="somelink">here</a> to view the source on GitHub.
+            <a href="https://goo.gl/UAGHgE">here</a> to view the source on GitHub.
         </div>
         <div class="right">
             <h1>about this sample</h1>
-            <p>This series of code chunks provides a full picture of the CSV Generation stack. The CSV Generation stack is used
-                in several places throughout our application, from the Revenue Reports, to families viewing their students
-                and invoices.
-                <br/>
-                <br/> Since we interpreted the requirements as having to build a hands-off system, we chose to send the monthly
-                reports as CSVs in an email to the administrator. Because of this, I chose to generate CSV reports on the
-                backend to prevent duplicate code between report viewing and sending. This operates with the help of CsvHelper,
-                a NuGet package that helps generate CSVs from models.</p>
+            <p>This sample of code takes data gathered by hitting the Invoice endpoint and calculates the date of the next invoice
+                in it. It is used in two places: first, in the registration summary page, as shown below. It is also shown
+                on the Update Card Information page on the payment user accounts.</p>
         </div>
     </div>
     <div class="section-light-blue flex">
         <div class="code-chunk">
-            <pre><code class="lang-CSharp">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> byte[] GenerateCsv&lt;T&gt;(IList&lt;T&gt; itemsToWriteList, ClassMap map = <span class="hljs-literal">null</span>)
-                {
-                    <span class="hljs-keyword">using</span> (<span class="hljs-keyword">var</span> memoryStream = <span class="hljs-keyword">new</span> <span class="hljs-type">MemoryStream</span>())
-                    {
-                        TextWriter writer = <span class="hljs-keyword">new</span> <span class="hljs-type">StreamWriter</span>(memoryStream);
-                        <span class="hljs-keyword">var</span> csv = <span class="hljs-keyword">new</span> <span class="hljs-type">CsvWriter</span>(writer);
-                        <span class="hljs-keyword">var</span> records = itemsToWriteList;
-            
-                        <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>)
-                        {
-                            csv.Configuration.RegisterClassMap(map);
-                        }
-            
-                        csv.WriteRecords(records);
-                        writer.Flush();
-            
-                        <span class="hljs-keyword">return</span> memoryStream.ToArray();
+            <pre><code class="lang-JavaScript"><span class="hljs-keyword">const</span> parseDateTime = <span class="hljs-function">(<span class="hljs-params">invoiceData</span>) =&gt;</span> {
+                    <span class="hljs-keyword">let</span> dateParseArray = [];
+                    invoiceData.forEach(<span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> {
+                        <span class="hljs-keyword">let</span> date = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>((<span class="hljs-built_in">Date</span>.parse(element.InvoiceDate.substring(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>))));
+                        dateParseArray.push(date);
+                    });
+                
+                    <span class="hljs-keyword">let</span> today = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+                    dateParseArray = dateParseArray.sort(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> {
+                        <span class="hljs-keyword">let</span> distanceA = <span class="hljs-built_in">Math</span>.abs(today - a);
+                        <span class="hljs-keyword">let</span> distanceB = <span class="hljs-built_in">Math</span>.abs(today - b);
+                        <span class="hljs-keyword">return</span> distanceA - distanceB;
+                    }).filter(<span class="hljs-function">(<span class="hljs-params">d</span>) =&gt;</span> {
+                        <span class="hljs-keyword">return</span> d - today &gt; <span class="hljs-number">0</span>;
+                    });
+                
+                    <span class="hljs-keyword">if</span> (dateParseArray[<span class="hljs-number">0</span>] === <span class="hljs-literal">undefined</span>) {
+                        <span class="hljs-keyword">return</span> <span class="hljs-string">""</span>;
                     }
-                }
+                
+                    <span class="hljs-keyword">const</span> nextScheduledMonth = dateParseArray[<span class="hljs-number">0</span>].getUTCMonth() + <span class="hljs-number">1</span>;
+                    <span class="hljs-keyword">const</span> nextScheduledDay = dateParseArray[<span class="hljs-number">0</span>].getUTCDate();
+                    <span class="hljs-keyword">const</span> nextScheduledYear = dateParseArray[<span class="hljs-number">0</span>].getUTCFullYear();
+                    <span class="hljs-keyword">const</span> dateString = <span class="hljs-string">`<span class="hljs-subst">${nextScheduledMonth}</span>/<span class="hljs-subst">${nextScheduledDay}</span>/<span class="hljs-subst">${nextScheduledYear}</span>`</span>;
+                
+                    <span class="hljs-keyword">return</span> dateString;
+                };
+                
+                <span class="hljs-keyword">export</span> { parseDateTime };
                 </code></pre>
-        </div>
-        <div class="explanation-right-chunk">
-            <h1>csv generation</h1>
-            <p><code>GenerateCsv</code> is where the CSV actually gets generated in the form of a byte array to prepare for sending it as an HTTP response. The goal of this method was to make it as abstract as possible since several parts of the application use this feature. This method belongs in the utility project to allow for reuse in multiple components. it prefers interfaces over their implementations by using an <code>IList</code>, so that if we choose to use something like a <code>LinkedList</code> in the future, we are able to without much refactoring. It also allows for an IList of any type <code>&lt;T&gt;</code> to be generated into a CSV. Finally, it makes use of C#&#39;s default parameters so that even developers not using a model with a ClassMap can use this method.
-                Within the function, this code utilizes <code>using</code> statements to control resource usage. Additionally, <code>writer.Flush()</code> is called to prevent the <code>CsvWriter</code> from becoming overloaded.</p>               
-        </div>
-    </div>
 
-    <div class="section-teal flex">
-        <div class="code-chunk">
-            <pre><code class="lang-CSharp"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TotalProfitReportItem</span></span>
-                {
-                    <span class="hljs-keyword">public</span> string StudentFirstName { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-                    <span class="hljs-keyword">public</span> string StudentLastName { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-                    <span class="hljs-keyword">public</span> string FeeType { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-                    <span class="hljs-keyword">public</span> decimal Amount { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
-                }
-            
-                <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TotalProfitClassMap</span> : <span class="hljs-type">ClassMap</span>&lt;<span class="hljs-type">TotalProfitReportItem</span>&gt;</span>
-                {
-                    <span class="hljs-keyword">public</span> TotalProfitClassMap()
-                    {
-                        Map(m =&gt; m.StudentFirstName).Name(<span class="hljs-string">"First Name"</span>);
-                        Map(m =&gt; m.StudentLastName).Name(<span class="hljs-string">"Last Name"</span>);
-                        Map(m =&gt; m.FeeType).Name(<span class="hljs-string">"Fee Description"</span>);
-                        Map(m =&gt; m.Amount).Name(<span class="hljs-string">"Amount"</span>);
-                    }
-                }
-                </code></pre>
         </div>
         <div class="explanation-right-chunk">
-            <h1>report model</h1>
-            <p>
-                <code>TotalProfitReportItem</code> is an example of a model class that describes the columns of one of our revenue reports.
-                <code>TotalProfitReportItem</code> demonstrates low coupling by separating itself from any of the other reports. By creating a model for each
-                report type, it becomes easy to change what information is displayed in the report and create new reports.
-                ClassMaps are a feature in the CsvHelper library that allow you to customize how information is displayed
-                in the CSV. For this, I used the ClassMap to rename the columsn. Additionally, this class demonstrates high
-                cohesion by defining the CSV ClassMaps in the same place as the model definition.
+            <h1>closest date algorithm</h1>
+            <p> Some of the salient features of this code chunk include the use of features in JavaScript EcmaScript 6 (ES6).
+                This includes the use of arrow functions, templated strings, and use of keywords
+                <code>let</code> and
+                <code>const</code>. This matches industry standard specifications of how to write JavaScript. Additionally, I configured ESLint,
+                a JavaScript static code analysis tool, to enforce these styles throughout our JavaScript files. This helps
+                keep our JavaScript styles consistent, a key software engineering principle.
                 <br/>
-                <br/>
-            </p>
-
+                <br/> The sample uses a sorting algorithm to find the nearest date to today in the future, so it demonstrates
+                understanding of last semester&#39;s Algorithms/Introduction to Software Engineering course. Additionally,
+                this code is encapsulated in its own utility class to minimize code duplication and maximize code reuse.</p>
         </div>
     </div>
-
-    <div class="section-pink flex">
-        <div class="code-chunk">
-            <pre><code class="lang-CSharp"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ResponseFactory</span>
-</span>{
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> HttpResponseMessage ConstructCsvResponse(byte[] csvContentBytes)
-    {
-        <span class="hljs-keyword">var</span> result = <span class="hljs-keyword">new</span> <span class="hljs-type">HttpResponseMessage</span>(HttpStatusCode.OK)
-        {
-            Content = <span class="hljs-keyword">new</span> <span class="hljs-type">ByteArrayContent</span>(csvContentBytes)
-        };
-        result.Content.Headers.ContentType = <span class="hljs-keyword">new</span> <span class="hljs-type">MediaTypeHeaderValue</span>(<span class="hljs-string">"application/octet-stream"</span>);
-        result.Content.Headers.ContentLength = csvContentBytes.Length;
-        <span class="hljs-keyword">return</span> result;
-    }
-}
-                </code></pre>
-        </div>
+    <div class="section-teal">
+        <img src="screens/regsummary.png" alt="Report Summary" width="600" , height="auto">
         <div class="explanation-right-chunk">
-            <h1>http response</h1>
-            <p> The final chunk in this code sample is the <code>ConstructCsvResponse</code> method. This method custom creates the header and response of the CSV byte array using UTF-8 and specifying the length of the response. It displays good software engineering principles by making the representation of the data consistent both in the back-end and the front-end.</p>
-
-
+            <h1>use of the closest date algorithm is shown in the bottom right.</h1>
         </div>
     </div>
+
 </body>
 
 </html>

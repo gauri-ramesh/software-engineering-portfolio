@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="./main.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+    <h1>gauri's software engineering portfolio</h1>
+    <a href="Final.md" download="portfolio.md">download here</a>
+    <div class="topnav">
+        <a class="active" href="#home">CSV Generation</a>
+        <a href="closest-date-algorithm.html">Closest Date Algorithm</a>
+        <a href="example-report-engine.html">Example Report Engine</a>
+        <a href="error-handling.html">Standardizing Error Messages</a>
+        <a href="#about">Sample 5</a>
+    </div>
+    <div class="flex">
+        <div class="explanation">
+            <h1>code sample 4</h1>
+            Standardizing Error Messages
+            <br/> Click <a href="https://goo.gl/ZC6Vuc"> here </a>to view the source code on GitHub.
+        </div>
+        <div class="right">
+            <h1>about this sample</h1>
+            <p>This code standardizes front-end error error messages during input validation by providing a utility function
+                that assigns Bootstrap error classes to Knockout observables based on an optional validation function and
+                a custom error message.</p>
+        </div>
+    </div>
+    <div class="section-light-blue flex">
+        <div class="code-chunk">
+            <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> assignErrorClass = (viewModelAttribute, inputField, validator = <span class="hljs-literal">true</span>, message =
+                    <span class="hljs-string">"The following field is required"</span>) =&gt; {
+                        <span class="hljs-keyword">if</span> (viewModelAttribute === <span class="hljs-literal">undefined</span>) {
+                            badInput(inputField, message);
+                            $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
+                            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!validator) {
+                            badInput(inputField, message);
+                            $(inputField).addClass(<span class="hljs-string">"is-invalid"</span>);
+                            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                        } <span class="hljs-keyword">else</span> {
+                            goodInput(inputField);
+                            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+                        }
+                    };
+                    
+                    <span class="hljs-keyword">const</span> goodInput = <span class="hljs-function">(<span class="hljs-params">element</span>) =&gt;</span> {
+                        $(element).removeClass(<span class="hljs-string">"is-invalid"</span>);
+                        $(<span class="hljs-string">`<span class="hljs-subst">${element}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"hidden"</span>);
+                    };
+                    
+                    <span class="hljs-keyword">const</span> badInput = <span class="hljs-function">(<span class="hljs-params">id, message</span>) =&gt;</span> {
+                        $(id).addClass(<span class="hljs-string">"is-invalid"</span>);
+                        $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).css(<span class="hljs-string">"visibility"</span>, <span class="hljs-string">"visible"</span>);
+                        $(<span class="hljs-string">`<span class="hljs-subst">${id}</span>-invalid`</span>).text(message);
+                    };
+                    </code></pre>
+
+        </div>
+        <div class="explanation-right-chunk">
+            <h1>everybody makes mistakes.</h1>
+            <p>This sample of code, similar to the Closest Date Algorithm, makes use of ES6+ features. In the
+                <code>goodInput</code> and
+                <code>badInput</code> functions I use JQuery to dynamically add and remove error CSS classes. This adheres to software engineering
+                principles by preventing code duplication throughout the file, since every input needs it during registration.
+                Additionally, this adheres to the principles of developing good user interfaces by giving the user feedback
+                as they interact with the application that is consistent both visually and structurally. The error message
+                are displayed in a pink/red tone to indicate danger or error to the user. This function works in any input
+                validation scenario because the validator and message parameters have default values. This means that even
+                if you have input that requires no validation besides making sure it isn&#39;t empty, it can still be used.</p>
+
+        </div>
+    </div>
+
+
+    </div>
+</body>
+
+</html>
