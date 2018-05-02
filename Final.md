@@ -2,7 +2,12 @@ Gauri Ramesh <br>
 Software Engineering Final Exam Part 1
 
 ## Code Sample #1: CSV Generation
-To find this file in the code base, navigate to this [link](https://github.com/skmshaffer/RAIK383H-SoftwareEngineeringProject/blob/ffd6954de93d4a38dc496cc26d048c64288a7f84/NelnetProject/Utilities/CsvGenerator.cs).
+To find this file in the code base, navigate to these links:
+
+[CSV Generation](https://goo.gl/nQMVBs) <br>
+[Report Model](https://goo.gl/vXv7Ew) <br>
+[HTTP Response](https://goo.gl/2E6HTw) <br>
+
 
 CsvGenerator.cs
 ```CSharp
@@ -130,6 +135,8 @@ The sample uses a sorting algorithm to find the nearest date to today in the fut
 ## Code Sample #3: Report Generation
 Of all of the reports I generated, I chose to showcase the Total Profit Report Engine.
 
+To find this file in the codebase, navigate to this [link](https://goo.gl/5Jn7SS)
+
 `TotalProfitReportEngine.cs`
 
 ```CSharp
@@ -204,6 +211,8 @@ About This Code Chunk: <br/>
 This code chunk demonstrates good use of IDesign Architecture and dependency injection. As seen in the constructor of the TotalProfitReportEngine, because this is an engine, it is only communicating with the Accessors (the layer below it). Additionally, this code follows the dependency inversion principle by using constructor injection for all of the Accessors it is using. One large roadblock I ran into while writing all of the report engines was standardizing the way different languages represent dates. C# and JavaScript each use different ways of representing dates as strings. I fixed this by creating a C#-formatted date string on the JavaScript side, and allowing the report engines to parse it into DateTime objects. Because that is a piece of business logic, I put this code in the Engine layer. This sample demonstrates high cohesion because all methods relating to the `TotalProfitReportEngine` are encapsulated in one class, allowing for maximum code reuse. Efficiency and clean code was taken into account while writing this method - I took care to only create report column objects for those invoices that fall in the desired date range. This class implements the `ITotalProfitReportEngine` interface, which implements the `IReportEngine` interface. The `IReportEngine` interface contains methods for all of the bare-bones necessities of a revenue report - `CreateReportItemsFromDatabase`, the method that takes persisted data and constructs rows based on user preferences. There is the `ReportTotal`, which calculates any kind of aggregate amount the user wants, and finally, `CreateReport`, which creates the CSV to send up to the web layer. Finally, this Engine utilizes LINQ to help make the C# code clean and readable.
 ## Code Sample #4 : Standardizing Front-End Input Validation Error Messages
 
+To find this file in the codebase, navigate to this [link](https://goo.gl/ZC6Vuc)
+
 ```javascript
 const assignErrorClass = (viewModelAttribute, inputField, validator = true, message =
 "The following field is required") => {
@@ -237,6 +246,8 @@ const badInput = (id, message) => {
 This code standardizes front-end error error messages during input validation by providing a utility function that assigns Bootstrap error classes to Knockout observables based on an optional validation function and a custom error message. This sample of code, similar to the Closest Date Algorithm, makes use of ES6+ features. In the `goodInput` and `badInput` functions I use JQuery to dynamically add and remove error CSS classes. This adheres to software engineering principles by preventing code duplication throughout the file, since every input needs it during registration. Additionally, this adheres to the principles of developing good user interfaces by giving the user feedback as they interact with the application that is consistent both visually and structurally. The error message are displayed in a pink/red tone to indicate danger or error to the user. This function works in any input validation scenario because the validator and message parameters have default values. This means that even if you have input that requires no validation besides making sure it isn't empty, it can still be used.
 
 ## Code Sample #5 : Text Message Notification Accessor
+
+To find this file in the codebase, navigate to this [link](https://goo.gl/mbbvEc)
 
 ```CSharp
 using System.Diagnostics;
